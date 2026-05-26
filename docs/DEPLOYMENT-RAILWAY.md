@@ -45,7 +45,7 @@ Service → **Variables** → add:
 | Variable | Value |
 |----------|--------|
 | `NODE_ENV` | `production` |
-| `DATABASE_URL` | `file:/data/prod.db` |
+| `DATABASE_URL` | `file:/data/prod.db` (must match volume mount path `/data`) |
 | `JWT_SECRET` | _(generate a long random string, 32+ chars)_ |
 | `JWT_EXPIRES_IN` | `8h` |
 | `SEED_ADMIN_EMAIL` | `admin@company.com` |
@@ -73,6 +73,9 @@ https://<your-railway-domain>/health
 Expected: `{"status":"ok"}`
 
 ### Step 7: Seed 10,000 employees (one time)
+
+`railway.toml` runs `npm run seed` on container start (after the `/data` volume is mounted).  
+Do **not** use a **pre-deploy** seed step — pre-deploy runs before the volume is attached, which causes `Cannot open database because the directory does not exist`.
 
 **Option A — Railway CLI (recommended)**
 
@@ -172,6 +175,7 @@ For interviews, **Vercel (client) + Railway (API)** is the simplest split.
 | Build fails on `better-sqlite3` | Ensure build tools + Node 22; check build logs |
 | `P2021` / table not found | `start:prod` runs migrations; check deploy logs for Prisma errors |
 | CORS error in browser | `CORS_ORIGIN` must exactly match frontend URL (scheme + host, no path) |
+| Seed fails: directory does not exist | Remove pre-deploy seed; use `DATABASE_URL=file:/data/prod.db` with volume at `/data`; redeploy (seed runs in `startCommand`) |
 | Login works, employees empty | Run `railway run npm run seed` from `apps/server` |
 | Data lost after redeploy | Volume not mounted or wrong `DATABASE_URL` path |
 | 502 / app not listening | App must listen on `process.env.PORT` (already uses `env.PORT`) |
