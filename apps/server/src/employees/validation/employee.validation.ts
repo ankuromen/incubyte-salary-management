@@ -1,12 +1,15 @@
 import { z } from "zod";
+import { emailField } from "../../lib/validation/email.js";
+import { positiveNumber } from "../../lib/validation/positive-number.js";
+import { requiredString } from "../../lib/validation/required-string.js";
 
 export const createEmployeeSchema = z.object({
-  fullName: z.string().trim().min(1, "fullName is required"),
-  email: z.string().trim().email("email must be valid"),
-  jobTitle: z.string().trim().min(1, "jobTitle is required"),
-  country: z.string().trim().min(1, "country is required"),
-  department: z.string().trim().min(1, "department is required"),
-  salary: z.number().positive("salary must be a positive number"),
+  fullName: requiredString("fullName"),
+  email: emailField(),
+  jobTitle: requiredString("jobTitle"),
+  country: requiredString("country"),
+  department: requiredString("department"),
+  salary: positiveNumber("salary"),
   dateOfJoining: z.coerce.date()
 });
 
