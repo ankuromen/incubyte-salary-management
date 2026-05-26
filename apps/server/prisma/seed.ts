@@ -1,14 +1,10 @@
 import { prisma } from "../src/lib/prisma.js";
+import { logBenchmark } from "../src/seed/benchmark.js";
 import {
   DEFAULT_SEED_COUNT,
   generateEmployeeRecords
 } from "../src/seed/employee-generator.js";
 import { seedEmployees } from "../src/seed/seed-runner.js";
-
-const logBenchmark = (label: string, durationMs: number, detail?: string) => {
-  const detailSuffix = detail ? ` (${detail})` : "";
-  console.log(`[seed] ${label}: ${durationMs.toFixed(2)}ms${detailSuffix}`);
-};
 
 const main = async () => {
   const totalStartedAt = performance.now();
@@ -18,7 +14,12 @@ const main = async () => {
   logBenchmark("record generation", performance.now() - generationStartedAt, `${records.length} records`);
 
   const insertion = await seedEmployees(prisma, records);
-  logBenchmark("database insertion", insertion.durationMs, `${insertion.inserted} records inserted`);
+
+  if (insertion.skipped) {
+    console.log(`[seed] database already contains at least ${DEFAULT_SEED_COUNT} employees; skipping insertion`);
+  } else {
+    logBenchmark("database insertion", insertion.durationMs, `${insertion.inserted} records inserted`);
+  }
 
   logBenchmark("total seed duration", performance.now() - totalStartedAt);
 };
