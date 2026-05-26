@@ -13,6 +13,12 @@ export const createEmployeeSchema = z.object({
   dateOfJoining: z.coerce.date()
 });
 
+export const updateEmployeeSchema = createEmployeeSchema;
+
 export const validateCreateEmployee = (input: unknown) => {
   return createEmployeeSchema.safeParse(input);
+};
+
+export const validateUpdateEmployee = (input: unknown) => {
+  return updateEmployeeSchema.safeParse(input);
 };

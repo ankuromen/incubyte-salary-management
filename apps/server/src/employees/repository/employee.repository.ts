@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, type PrismaClient } from "@prisma/client";
 import type { CreateEmployeeDto } from "../dto/create-employee.dto.js";
 import type { EmployeeDto } from "../dto/employee.dto.js";
 import type { ListEmployeesQueryDto } from "../dto/list-employees-query.dto.js";
@@ -27,6 +27,25 @@ export class EmployeeRepository {
   async findById(id: string): Promise<EmployeeDto | null> {
     const employee = await this.prisma.employee.findUnique({ where: { id } });
     return employee ? toEmployeeDto(employee) : null;
+  }
+
+  async update(id: string, data: CreateEmployeeDto): Promise<EmployeeDto | null> {
+    try {
+      const employee = await this.prisma.employee.update({
+        where: { id },
+        data
+      });
+      return toEmployeeDto(employee);
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return null;
+      }
+
+      throw error;
+    }
   }
 
   async findMany(

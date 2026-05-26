@@ -6,7 +6,10 @@ import {
   type PaginatedEmployeesDto
 } from "../dto/list-employees-query.dto.js";
 import type { EmployeeRepository } from "../repository/employee.repository.js";
-import { validateCreateEmployee } from "../validation/employee.validation.js";
+import {
+  validateCreateEmployee,
+  validateUpdateEmployee
+} from "../validation/employee.validation.js";
 
 export class EmployeeService {
   constructor(private readonly employeeRepository: EmployeeRepository) {}
@@ -50,6 +53,32 @@ export class EmployeeService {
         totalPages: total === 0 ? 0 : Math.ceil(total / limit)
       }
     };
+  }
+
+  async update(id: string, input: unknown): Promise<EmployeeDto> {
+    const validation = validateUpdateEmployee(input);
+
+    if (!validation.success) {
+      throw new ValidationError("Validation failed", validation.error.issues);
+    }
+
+    try {
+      const employee = await this.employeeRepository.update(id, validation.data);
+
+      if (!employee) {
+        throw new NotFoundError();
+      }
+
+      return employee;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+        throw new ValidationError("Validation failed", [
+          { path: ["email"], message: "email must be unique" }
+        ]);
+      }
+
+      throw error;
+    }
   }
 
   async getById(id: string): Promise<EmployeeDto> {

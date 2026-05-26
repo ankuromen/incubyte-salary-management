@@ -18,4 +18,9 @@ export class EmployeeController {
     const employee = await this.employeeService.getById(req.params.id);
     res.status(200).json(employee);
   };
+
+  update = async (req: Request, res: Response): Promise<void> => {
+    const employee = await this.employeeService.update(req.params.id, req.body);
+    res.status(200).json(employee);
+  };
 }

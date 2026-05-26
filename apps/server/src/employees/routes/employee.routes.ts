@@ -8,6 +8,7 @@ export const createEmployeeRouter = (controller: EmployeeController): Router => 
   router.post("/", asyncHandler(controller.create));
   router.get("/", asyncHandler(controller.list));
   router.get("/:id", asyncHandler(controller.getById));
+  router.put("/:id", asyncHandler(controller.update));
 
   return router;
 };
