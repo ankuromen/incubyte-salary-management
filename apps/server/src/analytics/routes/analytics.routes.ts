@@ -7,6 +7,7 @@ export const createAnalyticsRouter = (controller: AnalyticsController): Router =
 
   router.get("/country", asyncHandler(controller.getCountryAnalytics));
   router.get("/job-title", asyncHandler(controller.getJobTitleAnalytics));
+  router.get("/overview", asyncHandler(controller.getOverviewAnalytics));
 
   return router;
 };

@@ -13,4 +13,9 @@ export class AnalyticsController {
     const analytics = await this.analyticsService.getJobTitleAnalytics();
     res.status(200).json(analytics);
   };
+
+  getOverviewAnalytics = async (_req: Request, res: Response): Promise<void> => {
+    const analytics = await this.analyticsService.getOverviewAnalytics();
+    res.status(200).json(analytics);
+  };
 }
