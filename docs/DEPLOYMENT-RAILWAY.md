@@ -167,7 +167,8 @@ For interviews, **Vercel (client) + Railway (API)** is the simplest split.
 | Problem | Solution |
 |---------|----------|
 | `npm ci` / lockfile out of sync | From `apps/server` run `npm install`, commit `package-lock.json`, redeploy |
-| Build fails on `better-sqlite3` | Ensure Nixpacks/Node 20+; redeploy; check build logs |
+| **Prisma: upgrade Node.js** | Nixpacks must use **Node 22** (not 18). Repo includes `nixpacks.toml` + `.node-version`. Or set variable `NIXPACKS_NODE_VERSION=22` in Railway |
+| Build fails on `better-sqlite3` | Ensure build tools + Node 22; check build logs |
 | `P2021` / table not found | `start:prod` runs migrations; check deploy logs for Prisma errors |
 | CORS error in browser | `CORS_ORIGIN` must exactly match frontend URL (scheme + host, no path) |
 | Login works, employees empty | Run `railway run npm run seed` from `apps/server` |

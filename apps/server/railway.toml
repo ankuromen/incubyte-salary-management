@@ -3,7 +3,7 @@
 
 [build]
 builder = "nixpacks"
-# Railpack runs `npm ci` first — package-lock.json must stay in sync (run `npm install` locally after dependency changes)
+# Nixpacks runs `npm ci` first — use Node 22 (see nixpacks.toml); keep package-lock.json in sync
 buildCommand = "npm run prisma:generate && npm run build"
 
 [deploy]
