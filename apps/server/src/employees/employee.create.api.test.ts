@@ -1,7 +1,8 @@
+import type { Express } from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it } from "vitest";
-import { createApp } from "../app.js";
 import { prisma } from "../lib/prisma.js";
+import { setupAuthenticatedApp } from "../test/auth-helpers.js";
 
 const validEmployeePayload = {
   fullName: "Jane Doe",
@@ -14,13 +15,19 @@ const validEmployeePayload = {
 };
 
 describe("POST /employees", () => {
+  let app: Express;
+  let auth: { Authorization: string };
+
   beforeEach(async () => {
     await prisma.employee.deleteMany();
+    await prisma.admin.deleteMany();
+    ({ app, auth } = await setupAuthenticatedApp());
   });
 
   it("creates an employee and returns 201", async () => {
-    const response = await request(createApp())
+    const response = await request(app)
       .post("/employees")
+      .set(auth)
       .send(validEmployeePayload);
 
     expect(response.status).toBe(201);
@@ -30,8 +37,9 @@ describe("POST /employees", () => {
   });
 
   it("returns 400 for invalid input", async () => {
-    const response = await request(createApp())
+    const response = await request(app)
       .post("/employees")
+      .set(auth)
       .send({ ...validEmployeePayload, email: "not-an-email" });
 
     expect(response.status).toBe(400);
@@ -39,8 +47,9 @@ describe("POST /employees", () => {
   });
 
   it("returns 400 for malformed JSON body", async () => {
-    const response = await request(createApp())
+    const response = await request(app)
       .post("/employees")
+      .set(auth)
       .set("Content-Type", "application/json")
       .send("{ invalid json");
 

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchEmployee, updateEmployee } from "../api/employees";
 import { EmployeeForm } from "../components/forms/EmployeeForm";
+import { Alert } from "../components/ui/Alert";
+import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { PageHeader } from "../components/ui/PageHeader";
 import {
@@ -59,13 +61,26 @@ export const EditEmployeePage = () => {
   };
 
   if (isLoading) {
-    return <p className="text-sm text-slate-600">Loading employee...</p>;
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-24">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+        <p className="text-sm font-medium text-slate-500">Loading employee…</p>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-4">
-      <PageHeader title="Edit Employee" />
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+    <div className="space-y-6">
+      <PageHeader
+        subtitle="Update compensation, role, or contact details for this team member."
+        title="Edit Employee"
+        actions={
+          <Button type="button" variant="secondary" onClick={() => navigate("/employees")}>
+            Back to list
+          </Button>
+        }
+      />
+      {error ? <Alert>{error}</Alert> : null}
       <Card>
         <EmployeeForm initialValues={initialValues} submitLabel="Update Employee" onSubmit={handleSubmit} />
       </Card>

@@ -1,7 +1,8 @@
+import type { Express } from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it } from "vitest";
-import { createApp } from "../app.js";
 import { prisma } from "../lib/prisma.js";
+import { setupAuthenticatedApp } from "../test/auth-helpers.js";
 
 const employeePayload = {
   fullName: "Jane Doe",
@@ -24,18 +25,20 @@ const updatedPayload = {
 };
 
 describe("PUT /employees/:id", () => {
+  let app: Express;
+  let auth: { Authorization: string };
   let employeeId: string;
 
   beforeEach(async () => {
     await prisma.employee.deleteMany();
-    const created = await request(createApp()).post("/employees").send(employeePayload);
+    await prisma.admin.deleteMany();
+    ({ app, auth } = await setupAuthenticatedApp());
+    const created = await request(app).post("/employees").set(auth).send(employeePayload);
     employeeId = created.body.id;
   });
 
   it("updates an employee and returns 200", async () => {
-    const response = await request(createApp())
-      .put(`/employees/${employeeId}`)
-      .send(updatedPayload);
+    const response = await request(app).put(`/employees/${employeeId}`).set(auth).send(updatedPayload);
 
     expect(response.status).toBe(200);
     expect(response.body.fullName).toBe(updatedPayload.fullName);
@@ -44,8 +47,9 @@ describe("PUT /employees/:id", () => {
   });
 
   it("returns 404 when employee does not exist", async () => {
-    const response = await request(createApp())
+    const response = await request(app)
       .put("/employees/non-existent-id")
+      .set(auth)
       .send(updatedPayload);
 
     expect(response.status).toBe(404);
@@ -53,8 +57,9 @@ describe("PUT /employees/:id", () => {
   });
 
   it("returns 400 for invalid input", async () => {
-    const response = await request(createApp())
+    const response = await request(app)
       .put(`/employees/${employeeId}`)
+      .set(auth)
       .send({ ...updatedPayload, salary: -10 });
 
     expect(response.status).toBe(400);

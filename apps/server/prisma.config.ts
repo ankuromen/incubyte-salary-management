@@ -3,10 +3,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, env } from "prisma/config";
 
-const configDir = path.dirname(fileURLToPath(import.meta.url));
-const monorepoRoot = path.resolve(configDir, "../..");
+const serverRoot = path.dirname(fileURLToPath(import.meta.url));
 
-config({ path: path.join(monorepoRoot, ".env") });
+config({ path: path.join(serverRoot, ".env") });
 
 export default defineConfig({
   schema: "prisma/schema.prisma",

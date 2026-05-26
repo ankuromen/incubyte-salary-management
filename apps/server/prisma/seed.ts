@@ -1,4 +1,5 @@
 import { prisma } from "../src/lib/prisma.js";
+import { seedDefaultAdmin } from "../src/seed/seed-admins.js";
 import { logBenchmark } from "../src/seed/benchmark.js";
 import {
   DEFAULT_SEED_COUNT,
@@ -8,6 +9,8 @@ import { seedEmployees } from "../src/seed/seed-runner.js";
 
 const main = async () => {
   const totalStartedAt = performance.now();
+
+  await seedDefaultAdmin(prisma);
 
   const generationStartedAt = performance.now();
   const records = generateEmployeeRecords(DEFAULT_SEED_COUNT);

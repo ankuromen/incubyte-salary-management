@@ -1,7 +1,8 @@
+import type { Express } from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it } from "vitest";
-import { createApp } from "../app.js";
 import { prisma } from "../lib/prisma.js";
+import { setupAuthenticatedApp } from "../test/auth-helpers.js";
 
 const employeeOne = {
   fullName: "Jane Doe",
@@ -24,14 +25,19 @@ const employeeTwo = {
 };
 
 describe("GET /employees", () => {
+  let app: Express;
+  let auth: { Authorization: string };
+
   beforeEach(async () => {
     await prisma.employee.deleteMany();
-    await request(createApp()).post("/employees").send(employeeOne);
-    await request(createApp()).post("/employees").send(employeeTwo);
+    await prisma.admin.deleteMany();
+    ({ app, auth } = await setupAuthenticatedApp());
+    await request(app).post("/employees").set(auth).send(employeeOne);
+    await request(app).post("/employees").set(auth).send(employeeTwo);
   });
 
   it("returns paginated employees", async () => {
-    const response = await request(createApp()).get("/employees?page=1&limit=1");
+    const response = await request(app).get("/employees?page=1&limit=1").set(auth);
 
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
@@ -44,7 +50,7 @@ describe("GET /employees", () => {
   });
 
   it("filters employees by country", async () => {
-    const response = await request(createApp()).get("/employees?country=India");
+    const response = await request(app).get("/employees?country=India").set(auth);
 
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
@@ -52,7 +58,7 @@ describe("GET /employees", () => {
   });
 
   it("filters employees by department", async () => {
-    const response = await request(createApp()).get("/employees?department=Product");
+    const response = await request(app).get("/employees?department=Product").set(auth);
 
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
@@ -60,7 +66,7 @@ describe("GET /employees", () => {
   });
 
   it("searches employees by name or email", async () => {
-    const response = await request(createApp()).get("/employees?search=jane");
+    const response = await request(app).get("/employees?search=jane").set(auth);
 
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
@@ -69,20 +75,25 @@ describe("GET /employees", () => {
 });
 
 describe("GET /employees/:id", () => {
+  let app: Express;
+  let auth: { Authorization: string };
+
   beforeEach(async () => {
     await prisma.employee.deleteMany();
+    await prisma.admin.deleteMany();
+    ({ app, auth } = await setupAuthenticatedApp());
   });
 
   it("returns an employee by id", async () => {
-    const created = await request(createApp()).post("/employees").send(employeeOne);
-    const response = await request(createApp()).get(`/employees/${created.body.id}`);
+    const created = await request(app).post("/employees").set(auth).send(employeeOne);
+    const response = await request(app).get(`/employees/${created.body.id}`).set(auth);
 
     expect(response.status).toBe(200);
     expect(response.body.email).toBe(employeeOne.email);
   });
 
   it("returns 404 when employee does not exist", async () => {
-    const response = await request(createApp()).get("/employees/non-existent-id");
+    const response = await request(app).get("/employees/non-existent-id").set(auth);
 
     expect(response.status).toBe(404);
     expect(response.body.error).toBeDefined();

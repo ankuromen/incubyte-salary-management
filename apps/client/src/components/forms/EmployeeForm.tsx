@@ -4,6 +4,8 @@ import {
   employeeFormSchema,
   type EmployeeFormValues
 } from "../../validation/employee-form.schema";
+import { Button } from "../ui/Button";
+import { inputClassName, labelClassName } from "../ui/Input";
 
 type EmployeeFormProps = {
   initialValues?: EmployeeFormValues;
@@ -50,11 +52,11 @@ export const EmployeeForm = ({
   };
 
   return (
-    <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
+    <form className="grid gap-5 md:grid-cols-2" onSubmit={handleSubmit}>
       <Field error={errors.fullName} label="Full name">
         <input
           aria-label="Full name"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className={inputClassName}
           value={values.fullName}
           onChange={(event) => updateField("fullName", event.target.value)}
         />
@@ -62,7 +64,7 @@ export const EmployeeForm = ({
       <Field error={errors.email} label="Email">
         <input
           aria-label="Email"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className={inputClassName}
           type="email"
           value={values.email}
           onChange={(event) => updateField("email", event.target.value)}
@@ -71,7 +73,7 @@ export const EmployeeForm = ({
       <Field error={errors.jobTitle} label="Job title">
         <input
           aria-label="Job title"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className={inputClassName}
           value={values.jobTitle}
           onChange={(event) => updateField("jobTitle", event.target.value)}
         />
@@ -79,7 +81,7 @@ export const EmployeeForm = ({
       <Field error={errors.country} label="Country">
         <input
           aria-label="Country"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className={inputClassName}
           value={values.country}
           onChange={(event) => updateField("country", event.target.value)}
         />
@@ -87,7 +89,7 @@ export const EmployeeForm = ({
       <Field error={errors.department} label="Department">
         <input
           aria-label="Department"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className={inputClassName}
           value={values.department}
           onChange={(event) => updateField("department", event.target.value)}
         />
@@ -95,7 +97,7 @@ export const EmployeeForm = ({
       <Field error={errors.salary} label="Salary">
         <input
           aria-label="Salary"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className={inputClassName}
           min={0}
           type="number"
           value={values.salary || ""}
@@ -105,29 +107,25 @@ export const EmployeeForm = ({
       <Field error={errors.dateOfJoining} label="Joining date">
         <input
           aria-label="Joining date"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className={inputClassName}
           type="date"
           value={values.dateOfJoining}
           onChange={(event) => updateField("dateOfJoining", event.target.value)}
         />
       </Field>
-      <div className="md:col-span-2">
-        <button
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-          disabled={isSubmitting}
-          type="submit"
-        >
-          {submitLabel}
-        </button>
+      <div className="flex gap-3 md:col-span-2 md:justify-end">
+        <Button disabled={isSubmitting} type="submit">
+          {isSubmitting ? "Saving…" : submitLabel}
+        </Button>
       </div>
     </form>
   );
 };
 
 const Field = ({ label, error, children }: { label: string; error?: string; children: ReactNode }) => (
-  <div className="space-y-1 text-sm">
-    <span className="font-medium text-slate-700">{label}</span>
+  <div>
+    <label className={labelClassName}>{label}</label>
     {children}
-    {error ? <span className="text-xs text-red-600">{error}</span> : null}
+    {error ? <p className="mt-1.5 text-xs font-medium text-red-600">{error}</p> : null}
   </div>
 );

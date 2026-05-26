@@ -1,14 +1,40 @@
-node_modules
-dist
-coverage
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+
+# Environment (keep examples)
 .env
 .env.local
 .env.*.local
 !.env.example
+
+# Logs
 *.log
-apps/server/dev.db
-apps/server/prisma/dev.db
-apps/server/prisma/test.db
-apps/server/prisma/test.db-journal
-apps/server/prisma/dev.db-journal
-apps/server/dev.db-journal
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# SQLite databases (dev & test)
+**/prisma/dev.db
+**/prisma/dev.db-journal
+**/prisma/test.db
+**/prisma/test.db-journal
+**/dev.db
+**/dev.db-journal
+
+# Vite
+**/.vite/

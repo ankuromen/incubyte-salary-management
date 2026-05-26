@@ -3,9 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
-const monorepoRoot = path.resolve(currentDir, "../../../..");
+const serverRoot = path.resolve(currentDir, "../..");
 
-// Skip loading .env during Vitest so tests control process.env directly.
 if (process.env.VITEST !== "true") {
-  config({ path: path.join(monorepoRoot, ".env") });
+  config({ path: path.join(serverRoot, ".env") });
 }

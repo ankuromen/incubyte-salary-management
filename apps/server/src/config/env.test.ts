@@ -26,6 +26,6 @@ describe("env config", () => {
     const { env } = await import("./env.js");
 
     expect(env.PORT).toBe(3000);
-    expect(env.DATABASE_URL).toBe("file:./dev.db");
+    expect(env.DATABASE_URL).toBe("file:./prisma/dev.db");
   });
 });
