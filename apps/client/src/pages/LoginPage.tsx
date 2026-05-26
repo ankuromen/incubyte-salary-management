@@ -90,6 +90,11 @@ export const LoginPage = () => {
           <Button className="mt-6 w-full" disabled={isSubmitting} type="submit">
             {isSubmitting ? "Signing in…" : "Sign in"}
           </Button>
+
+          <p className="mt-6 text-center text-xs text-slate-500">
+            default : <span className="font-medium text-slate-600">admin@company.com</span> /{" "}
+            <span className="font-medium text-slate-600">Admin@123</span>
+          </p>
         </form>
       </div>
     </div>

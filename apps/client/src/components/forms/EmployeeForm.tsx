@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { COUNTRIES, DEPARTMENTS, JOB_TITLES } from "../../constants/employee-options";
 import {
   defaultEmployeeFormValues,
   employeeFormSchema,
@@ -6,6 +7,7 @@ import {
 } from "../../validation/employee-form.schema";
 import { Button } from "../ui/Button";
 import { inputClassName, labelClassName } from "../ui/Input";
+import { SelectWithOther } from "./SelectWithOther";
 
 type EmployeeFormProps = {
   initialValues?: EmployeeFormValues;
@@ -70,30 +72,37 @@ export const EmployeeForm = ({
           onChange={(event) => updateField("email", event.target.value)}
         />
       </Field>
-      <Field error={errors.jobTitle} label="Job title">
-        <input
-          aria-label="Job title"
-          className={inputClassName}
-          value={values.jobTitle}
-          onChange={(event) => updateField("jobTitle", event.target.value)}
-        />
-      </Field>
-      <Field error={errors.country} label="Country">
-        <input
-          aria-label="Country"
-          className={inputClassName}
-          value={values.country}
-          onChange={(event) => updateField("country", event.target.value)}
-        />
-      </Field>
-      <Field error={errors.department} label="Department">
-        <input
-          aria-label="Department"
-          className={inputClassName}
-          value={values.department}
-          onChange={(event) => updateField("department", event.target.value)}
-        />
-      </Field>
+
+      <SelectWithOther
+        ariaLabel="Job title"
+        error={errors.jobTitle}
+        label="Job title"
+        options={JOB_TITLES}
+        otherPlaceholder="Enter job title"
+        value={values.jobTitle}
+        onChange={(jobTitle) => updateField("jobTitle", jobTitle)}
+      />
+
+      <SelectWithOther
+        ariaLabel="Country"
+        error={errors.country}
+        label="Country"
+        options={COUNTRIES}
+        otherPlaceholder="Enter country"
+        value={values.country}
+        onChange={(country) => updateField("country", country)}
+      />
+
+      <SelectWithOther
+        ariaLabel="Department"
+        error={errors.department}
+        label="Department"
+        options={DEPARTMENTS}
+        otherPlaceholder="Enter department"
+        value={values.department}
+        onChange={(department) => updateField("department", department)}
+      />
+
       <Field error={errors.salary} label="Salary">
         <input
           aria-label="Salary"

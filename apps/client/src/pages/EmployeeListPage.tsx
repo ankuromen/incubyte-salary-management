@@ -4,6 +4,7 @@ import { deleteEmployee, fetchEmployees } from "../api/employees";
 import { EmployeeTable } from "../components/employees/EmployeeTable";
 import { Alert } from "../components/ui/Alert";
 import { Button } from "../components/ui/Button";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { PageHeader } from "../components/ui/PageHeader";
 import type { Employee, EmployeeListFilters, EmployeePagination } from "../types/employee";
 
@@ -25,6 +26,8 @@ export const EmployeeListPage = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadEmployees = useCallback(async (page: number, nextFilters: EmployeeListFilters) => {
     setIsLoading(true);
@@ -55,13 +58,30 @@ export const EmployeeListPage = () => {
     [employees]
   );
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this employee?")) {
+  const handleDeleteRequest = (id: string) => {
+    const employee = employees.find((item) => item.id === id);
+    if (employee) {
+      setEmployeeToDelete(employee);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!employeeToDelete) {
       return;
     }
 
-    await deleteEmployee(id);
-    await loadEmployees(pagination.page, filters);
+    setIsDeleting(true);
+    setError(null);
+
+    try {
+      await deleteEmployee(employeeToDelete.id);
+      setEmployeeToDelete(null);
+      await loadEmployees(pagination.page, filters);
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Failed to delete employee");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -89,9 +109,7 @@ export const EmployeeListPage = () => {
           setPagination((current) => ({ ...current, page: 1 }));
           setFilters((current) => ({ ...current, country }));
         }}
-        onDelete={(id) => {
-          void handleDelete(id);
-        }}
+        onDelete={handleDeleteRequest}
         onDepartmentChange={(department) => {
           setPagination((current) => ({ ...current, page: 1 }));
           setFilters((current) => ({ ...current, department }));
@@ -101,6 +119,26 @@ export const EmployeeListPage = () => {
         onSearchChange={(search) => {
           setPagination((current) => ({ ...current, page: 1 }));
           setFilters((current) => ({ ...current, search }));
+        }}
+      />
+
+      <ConfirmDialog
+        confirmLabel="Delete"
+        isLoading={isDeleting}
+        message={
+          employeeToDelete
+            ? `Are you sure you want to remove ${employeeToDelete.fullName}? This action cannot be undone.`
+            : ""
+        }
+        open={employeeToDelete !== null}
+        title="Delete employee?"
+        onCancel={() => {
+          if (!isDeleting) {
+            setEmployeeToDelete(null);
+          }
+        }}
+        onConfirm={() => {
+          void handleDeleteConfirm();
         }}
       />
     </div>

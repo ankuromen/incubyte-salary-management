@@ -1,48 +1,16 @@
-import { useEffect, useState } from "react";
-import {
-  fetchCountryAnalytics,
-  fetchJobTitleAnalytics,
-  fetchOverviewAnalytics
-} from "../api/analytics";
 import { AnalyticsDashboard } from "../components/analytics/AnalyticsDashboard";
 import { Alert } from "../components/ui/Alert";
 import { PageHeader } from "../components/ui/PageHeader";
-import type { CountryAnalytics, JobTitleAnalytics, OverviewAnalytics } from "../types/analytics";
+import { useAnalytics } from "../hooks/useAnalytics";
 
 export const AnalyticsPage = () => {
-  const [overview, setOverview] = useState<OverviewAnalytics | null>(null);
-  const [countryAnalytics, setCountryAnalytics] = useState<CountryAnalytics[]>([]);
-  const [jobTitleAnalytics, setJobTitleAnalytics] = useState<JobTitleAnalytics[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadAnalytics = async () => {
-      try {
-        const [overviewData, countryData, jobTitleData] = await Promise.all([
-          fetchOverviewAnalytics(),
-          fetchCountryAnalytics(),
-          fetchJobTitleAnalytics()
-        ]);
-
-        setOverview(overviewData);
-        setCountryAnalytics(countryData);
-        setJobTitleAnalytics(jobTitleData);
-      } catch (loadError) {
-        setError(loadError instanceof Error ? loadError.message : "Failed to load analytics");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadAnalytics();
-  }, []);
+  const { overview, countryAnalytics, jobTitleAnalytics, error, isLoading } = useAnalytics();
 
   if (isLoading) {
     return (
       <div className="space-y-6">
         <PageHeader
-          subtitle="Compensation insights across countries, departments, and roles."
+          subtitle="Charts and tables for compensation, geography, and roles."
           title="Analytics"
         />
         <div className="flex flex-col items-center justify-center gap-4 py-24">
@@ -65,13 +33,14 @@ export const AnalyticsPage = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        subtitle="Compensation insights across countries, departments, and roles."
+        subtitle="Interactive charts and detailed tables for compensation insights."
         title="Analytics"
       />
       <AnalyticsDashboard
         countryAnalytics={countryAnalytics}
         jobTitleAnalytics={jobTitleAnalytics}
         overview={overview}
+        variant="full"
       />
     </div>
   );

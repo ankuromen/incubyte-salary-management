@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import type { CountryAnalytics, JobTitleAnalytics, OverviewAnalytics } from "../../types/analytics";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
@@ -29,29 +30,73 @@ const jobTitleAnalytics: JobTitleAnalytics[] = [
 ];
 
 describe("AnalyticsDashboard", () => {
-  it("renders salary insight cards and charts", () => {
+  it("renders stat cards and chart sections", () => {
     render(
       <AnalyticsDashboard
         countryAnalytics={countryAnalytics}
         jobTitleAnalytics={jobTitleAnalytics}
         overview={overview}
+        variant="full"
       />
     );
 
     expect(screen.getByText("Median Salary")).toBeTruthy();
     expect(screen.getByText("Total Employees")).toBeTruthy();
-    expect(screen.getByText("Salary Distribution")).toBeTruthy();
-    expect(screen.getByText("Country Breakdown")).toBeTruthy();
-    expect(screen.getByText("Department Insights")).toBeTruthy();
-    expect(screen.getByText("Job Title Averages")).toBeTruthy();
+    expect(screen.getByText("Salary distribution")).toBeTruthy();
+    expect(screen.getByText("Employees by country")).toBeTruthy();
+    expect(screen.getByText("Department compensation")).toBeTruthy();
+    expect(screen.getByText("Country salary comparison")).toBeTruthy();
+    expect(screen.getByText("Top roles by average salary")).toBeTruthy();
+    expect(screen.getByText("Job title averages")).toBeTruthy();
   });
 
-  it("shows country and department analytics data", () => {
+  it("hides detailed tables in compact mode", () => {
     render(
       <AnalyticsDashboard
         countryAnalytics={countryAnalytics}
         jobTitleAnalytics={jobTitleAnalytics}
         overview={overview}
+        variant="compact"
+      />
+    );
+
+    expect(screen.getByText("Salary distribution")).toBeTruthy();
+    expect(screen.queryByText("Job title averages")).toBeNull();
+  });
+
+  it("paginates job title averages table", async () => {
+    const user = userEvent.setup();
+    const manyRoles: JobTitleAnalytics[] = Array.from({ length: 15 }, (_, index) => ({
+      country: "India",
+      jobTitle: `Role ${index + 1}`,
+      averageSalary: 100_000 + index * 1000
+    }));
+
+    render(
+      <AnalyticsDashboard
+        countryAnalytics={countryAnalytics}
+        jobTitleAnalytics={manyRoles}
+        overview={overview}
+        variant="full"
+      />
+    );
+
+    expect(screen.getByText("Role 1")).toBeTruthy();
+    expect(screen.queryByText("Role 11")).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "Next page" }));
+
+    expect(screen.getByText("Role 11")).toBeTruthy();
+    expect(screen.queryByText("Role 1")).toBeNull();
+  });
+
+  it("shows country and department data in full mode", () => {
+    render(
+      <AnalyticsDashboard
+        countryAnalytics={countryAnalytics}
+        jobTitleAnalytics={jobTitleAnalytics}
+        overview={overview}
+        variant="full"
       />
     );
 

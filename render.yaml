@@ -1,0 +1,32 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploy from repo root; set Root Directory to apps/server in dashboard if not using blueprint.
+
+services:
+  - type: web
+    name: salary-management-api
+    runtime: node
+    rootDir: apps/server
+    buildCommand: npm install && npm run prisma:generate && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:/var/data/prod.db
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 8h
+      - key: SEED_ADMIN_EMAIL
+        value: admin@company.com
+      - key: SEED_ADMIN_PASSWORD
+        value: Admin@123
+      - key: SEED_ADMIN_NAME
+        value: System Admin
+      - key: CORS_ORIGIN
+        sync: false
+    disk:
+      name: sqlite-data
+      mountPath: /var/data
+      sizeGB: 1
