@@ -23,4 +23,9 @@ export class EmployeeController {
     const employee = await this.employeeService.update(req.params.id, req.body);
     res.status(200).json(employee);
   };
+
+  remove = async (req: Request, res: Response): Promise<void> => {
+    await this.employeeService.delete(req.params.id);
+    res.status(204).send();
+  };
 }

@@ -29,6 +29,22 @@ export class EmployeeRepository {
     return employee ? toEmployeeDto(employee) : null;
   }
 
+  async delete(id: string): Promise<boolean> {
+    try {
+      await this.prisma.employee.delete({ where: { id } });
+      return true;
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return false;
+      }
+
+      throw error;
+    }
+  }
+
   async update(id: string, data: CreateEmployeeDto): Promise<EmployeeDto | null> {
     try {
       const employee = await this.prisma.employee.update({
