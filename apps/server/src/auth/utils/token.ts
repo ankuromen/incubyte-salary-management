@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { type SignOptions } from "jsonwebtoken";
 import { env } from "../../config/env.js";
 import { UnauthorizedError } from "../../errors/http-error.js";
 
@@ -8,7 +8,10 @@ export type AccessTokenPayload = {
 };
 
 export const signAccessToken = (payload: AccessTokenPayload): string => {
-  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN });
+  const options: SignOptions = {
+    expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"],
+  };
+  return jwt.sign(payload, env.JWT_SECRET, options);
 };
 
 export const verifyAccessToken = (token: string): AccessTokenPayload => {

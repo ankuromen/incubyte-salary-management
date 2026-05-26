@@ -1,6 +1,11 @@
 import type { Request, Response } from "express";
 import type { IEmployeeService } from "../service/employee.service.interface.js";
 
+const routeParam = (value: string | string[] | undefined): string => {
+  if (Array.isArray(value)) return value[0] ?? "";
+  return value ?? "";
+};
+
 export class EmployeeController {
   constructor(private readonly employeeService: IEmployeeService) {}
 
@@ -15,17 +20,17 @@ export class EmployeeController {
   };
 
   getById = async (req: Request, res: Response): Promise<void> => {
-    const employee = await this.employeeService.getById(req.params.id);
+    const employee = await this.employeeService.getById(routeParam(req.params.id));
     res.status(200).json(employee);
   };
 
   update = async (req: Request, res: Response): Promise<void> => {
-    const employee = await this.employeeService.update(req.params.id, req.body);
+    const employee = await this.employeeService.update(routeParam(req.params.id), req.body);
     res.status(200).json(employee);
   };
 
   remove = async (req: Request, res: Response): Promise<void> => {
-    await this.employeeService.delete(req.params.id);
+    await this.employeeService.delete(routeParam(req.params.id));
     res.status(204).send();
   };
 }
