@@ -2,6 +2,7 @@ import { Prisma, type PrismaClient } from "@prisma/client";
 import type { CreateEmployeeDto } from "../dto/create-employee.dto.js";
 import type { EmployeeDto } from "../dto/employee.dto.js";
 import type { ListEmployeesQueryDto } from "../dto/list-employees-query.dto.js";
+import type { IEmployeeRepository } from "./employee.repository.interface.js";
 
 const toEmployeeDto = (employee: {
   id: string;
@@ -16,7 +17,7 @@ const toEmployeeDto = (employee: {
   updatedAt: Date;
 }): EmployeeDto => employee;
 
-export class EmployeeRepository {
+export class EmployeeRepository implements IEmployeeRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async create(data: CreateEmployeeDto): Promise<EmployeeDto> {

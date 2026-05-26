@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import type { EmployeeService } from "../service/employee.service.js";
+import type { IEmployeeService } from "../service/employee.service.interface.js";
 
 export class EmployeeController {
-  constructor(private readonly employeeService: EmployeeService) {}
+  constructor(private readonly employeeService: IEmployeeService) {}
 
   create = async (req: Request, res: Response): Promise<void> => {
     const employee = await this.employeeService.create(req.body);

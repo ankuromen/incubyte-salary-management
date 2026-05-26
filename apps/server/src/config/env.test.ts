@@ -20,6 +20,8 @@ describe("env config", () => {
 
   it("applies defaults when optional values are missing", async () => {
     vi.stubEnv("NODE_ENV", "development");
+    Reflect.deleteProperty(process.env, "PORT");
+    Reflect.deleteProperty(process.env, "DATABASE_URL");
 
     const { env } = await import("./env.js");
 

@@ -1,48 +1,34 @@
-import { Prisma } from "@prisma/client";
-import { NotFoundError, ValidationError } from "../../errors/http-error.js";
+import { NotFoundError } from "../../errors/http-error.js";
+import { withUniqueEmailHandling } from "../../lib/prisma/handle-prisma-error.js";
+import { parseRequestOrThrow } from "../../lib/validation/parse-request.js";
 import type { EmployeeDto } from "../dto/employee.dto.js";
 import {
   listEmployeesQuerySchema,
   type PaginatedEmployeesDto
 } from "../dto/list-employees-query.dto.js";
-import type { EmployeeRepository } from "../repository/employee.repository.js";
+import type { IEmployeeRepository } from "../repository/employee.repository.interface.js";
 import {
   validateCreateEmployee,
   validateUpdateEmployee
 } from "../validation/employee.validation.js";
+import type { IEmployeeService } from "./employee.service.interface.js";
 
-export class EmployeeService {
-  constructor(private readonly employeeRepository: EmployeeRepository) {}
+export class EmployeeService implements IEmployeeService {
+  constructor(private readonly employeeRepository: IEmployeeRepository) {}
 
   async create(input: unknown): Promise<EmployeeDto> {
-    const validation = validateCreateEmployee(input);
+    const data = parseRequestOrThrow(validateCreateEmployee(input));
 
-    if (!validation.success) {
-      throw new ValidationError("Validation failed", validation.error.issues);
-    }
-
-    try {
-      return await this.employeeRepository.create(validation.data);
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-        throw new ValidationError("Validation failed", [
-          { path: ["email"], message: "email must be unique" }
-        ]);
-      }
-
-      throw error;
-    }
+    return withUniqueEmailHandling(() => this.employeeRepository.create(data));
   }
 
   async list(query: unknown): Promise<PaginatedEmployeesDto> {
-    const validation = listEmployeesQuerySchema.safeParse(query);
-
-    if (!validation.success) {
-      throw new ValidationError("Validation failed", validation.error.issues);
-    }
-
-    const { items, total } = await this.employeeRepository.findMany(validation.data);
-    const { page, limit } = validation.data;
+    const { page, limit, ...filters } = parseRequestOrThrow(listEmployeesQuerySchema.safeParse(query));
+    const { items, total } = await this.employeeRepository.findMany({
+      page,
+      limit,
+      ...filters
+    });
 
     return {
       data: items,
@@ -56,29 +42,17 @@ export class EmployeeService {
   }
 
   async update(id: string, input: unknown): Promise<EmployeeDto> {
-    const validation = validateUpdateEmployee(input);
+    const data = parseRequestOrThrow(validateUpdateEmployee(input));
 
-    if (!validation.success) {
-      throw new ValidationError("Validation failed", validation.error.issues);
-    }
-
-    try {
-      const employee = await this.employeeRepository.update(id, validation.data);
+    return withUniqueEmailHandling(async () => {
+      const employee = await this.employeeRepository.update(id, data);
 
       if (!employee) {
         throw new NotFoundError();
       }
 
       return employee;
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-        throw new ValidationError("Validation failed", [
-          { path: ["email"], message: "email must be unique" }
-        ]);
-      }
-
-      throw error;
-    }
+    });
   }
 
   async delete(id: string): Promise<void> {
