@@ -8,5 +8,7 @@ coverage
 *.log
 apps/server/dev.db
 apps/server/prisma/dev.db
+apps/server/prisma/test.db
+apps/server/prisma/test.db-journal
 apps/server/prisma/dev.db-journal
 apps/server/dev.db-journal
