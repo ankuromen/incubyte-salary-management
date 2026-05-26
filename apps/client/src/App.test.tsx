@@ -1,13 +1,18 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import App from "./App";
 
-describe("Dashboard page", () => {
-  it("renders initialized dashboard content", () => {
-    render(<App />);
+describe("App routing", () => {
+  it("renders HR dashboard home page", () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
 
-    expect(screen.getByText("Salary Management Dashboard")).toBeTruthy();
-    expect(screen.getByText("System initialized successfully")).toBeTruthy();
-    expect(screen.getByText(/API:/)).toBeTruthy();
+    expect(screen.getByText("HR Dashboard")).toBeTruthy();
+    expect(screen.getByText("Employee Directory")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "View employees" })).toBeTruthy();
   });
 });

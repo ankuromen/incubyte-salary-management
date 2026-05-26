@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { deleteEmployee, fetchEmployees } from "../api/employees";
 import { EmployeeTable } from "../components/employees/EmployeeTable";
+import { PageHeader } from "../components/ui/PageHeader";
 import type { Employee, EmployeeListFilters, EmployeePagination } from "../types/employee";
 
 const defaultPagination: EmployeePagination = {
@@ -63,16 +64,18 @@ export const EmployeeListPage = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Employees</h1>
-        <button
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
-          type="button"
-          onClick={() => navigate("/employees/new")}
-        >
-          Add Employee
-        </button>
-      </div>
+      <PageHeader
+        title="Employees"
+        actions={
+          <button
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
+            type="button"
+            onClick={() => navigate("/employees/new")}
+          >
+            Add Employee
+          </button>
+        }
+      />
 
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
 

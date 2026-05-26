@@ -1,15 +1,22 @@
-import { env } from "./config/env";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { AppLayout } from "./components/layout/AppLayout";
+import { AddEmployeePage } from "./pages/AddEmployeePage";
+import { AnalyticsPage } from "./pages/AnalyticsPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { EditEmployeePage } from "./pages/EditEmployeePage";
+import { EmployeeListPage } from "./pages/EmployeeListPage";
 
-const App = () => {
-  return (
-    <main className="min-h-screen bg-slate-50 p-8">
-      <section className="mx-auto max-w-3xl rounded-lg bg-white p-8 shadow">
-        <h1 className="text-3xl font-bold text-slate-900">Salary Management Dashboard</h1>
-        <p className="mt-3 text-lg text-slate-600">System initialized successfully</p>
-        <p className="mt-2 text-sm text-slate-500">API: {env.apiBaseUrl}</p>
-      </section>
-    </main>
-  );
-};
+const App = () => (
+  <Routes>
+    <Route element={<AppLayout />}>
+      <Route index element={<DashboardPage />} />
+      <Route element={<EmployeeListPage />} path="employees" />
+      <Route element={<AddEmployeePage />} path="employees/new" />
+      <Route element={<EditEmployeePage />} path="employees/:id/edit" />
+      <Route element={<AnalyticsPage />} path="analytics" />
+      <Route element={<Navigate replace to="/" />} path="*" />
+    </Route>
+  </Routes>
+);
 
 export default App;

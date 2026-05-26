@@ -8,7 +8,17 @@ const monorepoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 export default defineConfig({
   envDir: monorepoRoot,
   plugins: [react()],
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, "")
+      }
+    }
+  },
   test: {
-    environment: "jsdom"
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"]
   }
 });

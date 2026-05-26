@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchEmployee, updateEmployee } from "../api/employees";
 import { EmployeeForm } from "../components/forms/EmployeeForm";
+import { Card } from "../components/ui/Card";
+import { PageHeader } from "../components/ui/PageHeader";
 import {
   defaultEmployeeFormValues,
   type EmployeeFormValues
@@ -62,11 +64,11 @@ export const EditEmployeePage = () => {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-slate-900">Edit Employee</h1>
+      <PageHeader title="Edit Employee" />
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <div className="rounded-xl border border-slate-200 bg-white p-6">
+      <Card>
         <EmployeeForm initialValues={initialValues} submitLabel="Update Employee" onSubmit={handleSubmit} />
-      </div>
+      </Card>
     </div>
   );
 };

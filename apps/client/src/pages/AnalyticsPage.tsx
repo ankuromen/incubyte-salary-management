@@ -5,6 +5,7 @@ import {
   fetchOverviewAnalytics
 } from "../api/analytics";
 import { AnalyticsDashboard } from "../components/analytics/AnalyticsDashboard";
+import { PageHeader } from "../components/ui/PageHeader";
 import type { CountryAnalytics, JobTitleAnalytics, OverviewAnalytics } from "../types/analytics";
 
 export const AnalyticsPage = () => {
@@ -46,7 +47,7 @@ export const AnalyticsPage = () => {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
+      <PageHeader title="Analytics" />
       <AnalyticsDashboard
         countryAnalytics={countryAnalytics}
         jobTitleAnalytics={jobTitleAnalytics}
