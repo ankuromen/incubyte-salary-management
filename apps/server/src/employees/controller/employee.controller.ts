@@ -8,4 +8,14 @@ export class EmployeeController {
     const employee = await this.employeeService.create(req.body);
     res.status(201).json(employee);
   };
+
+  list = async (req: Request, res: Response): Promise<void> => {
+    const result = await this.employeeService.list(req.query);
+    res.status(200).json(result);
+  };
+
+  getById = async (req: Request, res: Response): Promise<void> => {
+    const employee = await this.employeeService.getById(req.params.id);
+    res.status(200).json(employee);
+  };
 }

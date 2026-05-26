@@ -1,7 +1,10 @@
 import { Prisma } from "@prisma/client";
-import { ValidationError } from "../../errors/http-error.js";
-import type { CreateEmployeeDto } from "../dto/create-employee.dto.js";
+import { NotFoundError, ValidationError } from "../../errors/http-error.js";
 import type { EmployeeDto } from "../dto/employee.dto.js";
+import {
+  listEmployeesQuerySchema,
+  type PaginatedEmployeesDto
+} from "../dto/list-employees-query.dto.js";
 import type { EmployeeRepository } from "../repository/employee.repository.js";
 import { validateCreateEmployee } from "../validation/employee.validation.js";
 
@@ -26,5 +29,36 @@ export class EmployeeService {
 
       throw error;
     }
+  }
+
+  async list(query: unknown): Promise<PaginatedEmployeesDto> {
+    const validation = listEmployeesQuerySchema.safeParse(query);
+
+    if (!validation.success) {
+      throw new ValidationError("Validation failed", validation.error.issues);
+    }
+
+    const { items, total } = await this.employeeRepository.findMany(validation.data);
+    const { page, limit } = validation.data;
+
+    return {
+      data: items,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: total === 0 ? 0 : Math.ceil(total / limit)
+      }
+    };
+  }
+
+  async getById(id: string): Promise<EmployeeDto> {
+    const employee = await this.employeeRepository.findById(id);
+
+    if (!employee) {
+      throw new NotFoundError();
+    }
+
+    return employee;
   }
 }
