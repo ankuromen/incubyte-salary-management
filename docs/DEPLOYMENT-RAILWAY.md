@@ -118,10 +118,11 @@ No trailing slash on the Railway URL.
 Back in Railway **Variables**, set:
 
 ```text
-CORS_ORIGIN=https://<your-vercel-domain>
+CORS_ORIGIN=http://localhost:5173,https://<your-vercel-domain>
 ```
 
-Example: `https://salary-management.vercel.app`
+Example: `http://localhost:5173,https://salary-management.vercel.app`  
+(Include localhost if you test the deployed API from `npm run dev`.)
 
 Redeploy the API service (or it may auto-redeploy on variable change).
 

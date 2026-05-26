@@ -10,7 +10,7 @@ const envSchema = z.object({
   SEED_ADMIN_EMAIL: z.string().email().default("admin@company.com"),
   SEED_ADMIN_PASSWORD: z.string().min(8).default("Admin@123"),
   SEED_ADMIN_NAME: z.string().min(1).default("System Admin"),
-  CORS_ORIGIN: z.string().url().optional()
+  CORS_ORIGIN: z.string().optional()
 });
 
 const parsed = envSchema.safeParse(process.env);
