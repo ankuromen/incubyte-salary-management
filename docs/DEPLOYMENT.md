@@ -85,14 +85,11 @@ Note your API URL: `https://<service>.onrender.com`
 
 ---
 
-## Railway (alternative)
+## Railway
 
-Same as Render:
+**Full step-by-step guide:** [DEPLOYMENT-RAILWAY.md](DEPLOYMENT-RAILWAY.md)
 
-- Root: `apps/server`
-- Start: `npm run start:prod`
-- Add volume for SQLite file path
-- Set `CORS_ORIGIN` + `VITE_API_BASE_URL` on Vercel
+Quick summary: Root Directory `apps/server`, volume at `/data`, `DATABASE_URL=file:/data/prod.db`, `npm run start:prod`, then seed via `railway run npm run seed`.
 
 ---
 

@@ -1,0 +1,13 @@
+# Railway config — set service Root Directory to apps/server in the dashboard
+# Docs: https://docs.railway.com/reference/config-as-code
+
+[build]
+builder = "nixpacks"
+# Railpack runs `npm ci` first — package-lock.json must stay in sync (run `npm install` locally after dependency changes)
+buildCommand = "npm run prisma:generate && npm run build"
+
+[deploy]
+startCommand = "npm run start:prod"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
