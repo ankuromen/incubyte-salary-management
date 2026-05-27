@@ -53,7 +53,7 @@ Frontend:
 Vercel
 
 Backend:
-Render or Railway
+Render
 
 ---
 

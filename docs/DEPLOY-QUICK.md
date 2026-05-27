@@ -1,6 +1,6 @@
 # Deploy in ~10 minutes (Render + Vercel)
 
-Fastest path for this project. No Railway CLI required.
+Fastest path for this project: Render (API) + Vercel (client).
 
 ---
 
@@ -61,12 +61,6 @@ Save (auto-redeploy).
 - URL: your Vercel app  
 - Email: `admin@company.com`  
 - Password: `Admin@123` (or whatever you set in Render for `SEED_ADMIN_PASSWORD`)
-
----
-
-## Why not Railway for a quick deploy?
-
-Railway works but needs manual volume path + `railway run seed`. Render’s blueprint sets disk + env in one click; seed runs in the web **Shell** (no CLI install).
 
 ---
 

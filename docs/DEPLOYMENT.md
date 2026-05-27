@@ -1,6 +1,8 @@
 # Deployment Guide
 
-Deploy **client → Vercel** and **API → Render** (or Railway with equivalent env vars).
+Deploy **client → Vercel** and **API → Render**.
+
+**Quick start:** [DEPLOY-QUICK.md](DEPLOY-QUICK.md)
 
 ## Prerequisites
 
@@ -23,7 +25,7 @@ Deploy **client → Vercel** and **API → Render** (or Railway with equivalent 
 | Setting | Value |
 |---------|--------|
 | Root Directory | `apps/server` |
-| Build Command | `npm install && npm run prisma:generate && npm run build` |
+| Build Command | `npm install --include=dev && npm run prisma:generate && npm run build` |
 | Start Command | `npm run start:prod` |
 | Health Check | `/health` |
 
@@ -85,19 +87,12 @@ Note your API URL: `https://<service>.onrender.com`
 
 ---
 
-## Railway
-
-**Full step-by-step guide:** [DEPLOYMENT-RAILWAY.md](DEPLOYMENT-RAILWAY.md)
-
-Quick summary: Root Directory `apps/server`, volume at `/data`, `DATABASE_URL=file:/data/prod.db`, `npm run start:prod`, then seed via `railway run npm run seed`.
-
----
-
 ## Troubleshooting
 
 | Issue | Fix |
 |-------|-----|
+| Build: `Cannot find type definition file for 'node'` | Use `npm install --include=dev` in build command (see `render.yaml`) |
 | CORS errors | Set `CORS_ORIGIN` on server to exact Vercel origin (no trailing slash) |
 | 401 on all routes | Login again; check `JWT_SECRET` stable across deploys |
-| Empty employees | Run `npm run seed` on server |
-| DB resets on deploy | Attach persistent disk; fix `DATABASE_URL` path |
+| Empty employees | Run `npm run seed` in Render **Shell** |
+| DB resets on deploy | Attach persistent disk at `/var/data`; `DATABASE_URL=file:/var/data/prod.db` |
