@@ -74,8 +74,9 @@ Expected: `{"status":"ok"}`
 
 ### Step 7: Seed 10,000 employees (one time)
 
-`railway.toml` runs `npm run seed` on container start (after the `/data` volume is mounted).  
-Do **not** use a **pre-deploy** seed step — pre-deploy runs before the volume is attached, which causes `Cannot open database because the directory does not exist`.
+Run seed **after** the first successful deploy (tables exist from `prisma migrate deploy`).  
+Do **not** put seed in the start command — inserting 10k rows delays `/health` and can trigger SIGTERM.  
+Do **not** use a **pre-deploy** seed — the volume is not mounted yet.
 
 **Option A — Railway CLI (recommended)**
 
@@ -175,7 +176,8 @@ For interviews, **Vercel (client) + Railway (API)** is the simplest split.
 | Build fails on `better-sqlite3` | Ensure build tools + Node 22; check build logs |
 | `P2021` / table not found | `start:prod` runs migrations; check deploy logs for Prisma errors |
 | CORS error in browser | `CORS_ORIGIN` must exactly match frontend URL (scheme + host, no path) |
-| Seed fails: directory does not exist | Remove pre-deploy seed; use `DATABASE_URL=file:/data/prod.db` with volume at `/data`; redeploy (seed runs in `startCommand`) |
+| Deploy killed (SIGTERM) during startup | Increase `healthcheckTimeout` (300s in `railway.toml`); do **not** run `npm run seed` in `startCommand` — seed via `railway run` |
+| Seed fails: directory does not exist | Match volume mount path to `DATABASE_URL` (e.g. volume `/var/data` → `file:/var/data/prod.db`); seed after deploy with `railway run` |
 | Login works, employees empty | Run `railway run npm run seed` from `apps/server` |
 | Data lost after redeploy | Volume not mounted or wrong `DATABASE_URL` path |
 | 502 / app not listening | App must listen on `process.env.PORT` (already uses `env.PORT`) |

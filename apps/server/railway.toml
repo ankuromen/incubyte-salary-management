@@ -7,8 +7,8 @@ builder = "nixpacks"
 buildCommand = "npm run prisma:generate && npm run build"
 
 [deploy]
-# Seed must run here (not pre-deploy): volumes are mounted only at container start.
-startCommand = "mkdir -p /data && npm run seed && npm run start:prod"
+# Migrations run in start:prod before the server listens. Seed once via: railway run npm run seed
+startCommand = "npm run start:prod"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
