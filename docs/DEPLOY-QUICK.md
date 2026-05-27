@@ -38,7 +38,7 @@ Fastest path for this project: Render (API) + Vercel (client).
    |-----|--------|
    | `VITE_API_BASE_URL` | `https://<your-render-api-url>` |
 
-   No trailing slash.
+   No trailing slash. **Do not** add `/api` — that prefix is only for local Vite proxy.
 
 4. **Deploy** → copy the Vercel URL.
 
